@@ -87,6 +87,15 @@ public class FrontController_bo extends javax.servlet.http.HttpServlet {
 				e.printStackTrace();
 			}
 		}
+		else if(command.equals("/adminPaymentSearch.bo")){
+			action = new PaymentAllSelectAction();
+			try{
+				forward = action.execute(request, response);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 		else if(command.equals("/replyWrite.bo")){
 			action = new ReplyWriteAction();
 			try{

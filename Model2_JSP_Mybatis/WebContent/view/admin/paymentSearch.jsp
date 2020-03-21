@@ -2,6 +2,8 @@
     	 pageEncoding="UTF-8"%>
 <%@ include file="/view/inc/header.jsp"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <c:set var="paymentList" value="${requestScope.paymentList}"/>
 <c:set var="paymentListSize" value="${requestScope.paymentListSize}"/>
 
