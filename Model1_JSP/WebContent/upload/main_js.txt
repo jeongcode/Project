@@ -1,0 +1,356 @@
+/*
+콘텐츠 영역 개발하기
+-콘텐츠 영역은 크게 
+  비주얼배너, 
+  알림판, 
+  최근게시물, 
+  알림배너, 
+  베스트Book, 
+  페이스북,
+  마케팅, 
+  온라인서점
+ 으로 나뉩니다.
+ 
+-레이아웃은 비주얼 배너가 들어가는 visual영역과
+  나머지 주제 소스들이 들어가는 content영역으로 나뉘었음.  
+*/
+
+
+//-----------------------------------------------------------
+/*
+ 주제 : 비주얼 배너 터치 슬라이드 만들기
+ 비주얼 배너 영역은 배너 중 한개만 노출되어 이루어져 있으며,
+ [이전/다음]버튼을 누르면 배너가 이동되어 바뀌게 됨.
+ 스마트폰에서는 손가락으로 터치 했을때 도 배너가 바뀔수 있도록 제작 하자
+ */
+$(function(){
+ 
+/*터치 슬라이드 비주얼 영역*/
+window.mySwipe = $("#mySwipe").Swipe(
+
+{ 
+  auto:3000, //배너가 3초 간격으로 이동합니다.
+  continuous: true, //반복해서 롤링 됩니다.
+  
+  //배너의 슬라이드 이동이 완료될 때 마다 
+  //익명함수의 실행문이 실행되게 선언
+  //이때  index매개변수에는 노출된 배너 이미지를 포함하는
+  //<li>태그의 인덱스 위치값을 전달 받습니다.
+  //그리고 element매개변수에는  노출된 <li>태그 자체를
+  //전달 받습니다.
+  callback:function(index, element){
+	  
+	  //class속성값이  active인 
+	  //배너위치 표시 동그라미 이미지<img>태그중
+	  //활성화(컬러)이미지를 선택 하여
+	  //attr()함수를 이용해 비활성화된 이미지로 바꿈
+	  //그리고 removeClass("삭제할class속성값")를
+	  //이용해 "active"calss속성값을 삭제 합니다.
+	  $(".touch_bullet .active")
+	  .attr("src", $(".touch_bullet .active").attr("src").replace("on.png","off.png"))
+	  .removeClass("active");							  
+												  
+		
+	  //인덱스(index)위치에  해당하는 불릿 버튼을 활성화된 버튼이미지로 만들고,
+	  //"active" class속성의 값을 생성 합니다.
+	  $(".touch_bullet  img")
+	  .eq(index)
+	  .attr("src", $(".touch_bullet  img")
+			  	   .eq(index).attr("src").replace("off.png","on.png"))
+      .addClass("active");
+	  
+												  
+	  }//function()끝
+ }//중괄호 {  }  끝
+
+).data("Swipe");// Swipe메소드 끝
+	
+	
+ /*비주얼 배너  < 이전  ,  > 다음     */  
+// < <img>를 감싸고 있는 <a>링크를 클릭 했을떄...
+$(".touch_left_btn  a").on("click", function(){
+
+	mySwipe.prev();//이전 배너로 이동하는 메소드 이다.
+	
+	return false;//<a>링크 기능 차단
+});
+
+// > <img>를 감싸고 있는 <a>링크를 클릭 했을떄..
+$(".touch_right_btn a").click(function(){
+	
+	mySwipe.next(); //다음 배너로 이동 하는 메소드 이다.
+	
+	return false;//<a>링크 기능 차단
+	
+});
+	
+  //-----------------------------------------------------------
+
+  /*
+   주제 : 자동 롤링 배너와 제어 버튼을 활용한 알림판 만들기
+  
+   알림판은 일정 시간 간격으로 자동으로 배너 이미지가 바뀌면서 해당하는 배너에 버튼이 활성화 됨.
+   이때 버튼을 마우스로 클릭하면 버트넹 해당하는 배너로 이동 됨.
+   그리고 정지 ■ 버튼을 누르면 자동으로 넘어가던 배너가 정지되고, 재생 ▶ 버튼을 누르면 다시 배너가 넘어가게 됨 
+   */
+
+//id속성값이 roll_banner_wrap인 <div>요소의 하위 모든<dd>요소를 새로운 배열에 담아 선택해서 가져와서
+//첫번쨰 <dd>태그(첫번째 배너 이미지 영역)를 제외한 나머지 배너 이미지 영역(dd들~~~)을 최종적으로 선택해오는데
+//첫번째 <dd>태그 영역을 제외하고 숨깁니다.
+//-> 사이트를 실행 하면 pop_banner_1.gif이미지가 먼저 화면에 나타남
+$("#roll_banner_wrap  dd").not(":first").hide();
+
+//첫번째 버튼이미지를 감싸고 있는 <a>태그를 onBtn변수에 저장
+var onBtn = $("#roll_banner_wrap dt a:first");
+
+//id가 roll_banner_wrap인 <div>태그의 하위 모든 <a>태그를 선택해..
+//<a>[1]</a> ,  <a>[2]</a> , <a>[3]</a> , <a>[4]</a>
+//<a>태그들 중에서 하나를 클릭 했을떄..
+$("#roll_banner_wrap dt a").on("click",function(){
+	
+	//노출되어 있는 배너이미지 <dd>영역을 숨김
+	$("#roll_banner_wrap  dd:visible").hide();
+		
+	//onBtn변수에 저장되어 있는 하위요소<img>선택해서 가져와서
+	//attr("속성명","설정값")을 이용하여 비활성화된 이미지 형태로 바꿉니다.
+	$("img",onBtn).attr("src",$("img",onBtn ).attr("src").replace("over.gif","out.gif"));
+	
+	//[1]~[4]버튼 이미지를 감싸고 있는 <a>요소중.. 
+	//클릭한 <a>요소의 index위치값(0 또는, 1또는, 2또는 3)을 구해옵니다.	
+	//예를 들어   [1]버튼 이미지를 감싸고 있는 <a>를 클릭 했을 때.. index위치값 0을 구해오고
+	//예를 들어  [2]버튼 이미지를 감싸고 있는 <a>를 클릭 했을떄... index위치값 1을 구해 옴
+	var num = $("#roll_banner_wrap dt a").index(this);
+	
+	//클릭한 <a>요소에 index위치값과 일치하는? <dd>태그영역(배너이미지영역)만 화면에 나타내기 
+	//show()메소드를 이용하여 배너이미지영역인? <dd>영역을 노출 시킴
+	$("#roll_banner_wrap dd").eq(num).show();
+
+	//클릭한 <a>요소의 하위<img>요소를 선택해  "src"속성값을 바꾸어서  활성화된 버튼이미지로 바꿉니다.
+    $("img",this).attr("src", $("img",this).attr("src").replace("out.gif","over.gif"));
+
+
+    //1~4버튼을 감싸고 있는 <a>태그들중.. 클릭한 <a>태그를 onBtn변수에저장
+    onBtn = $(this);
+    
+    //<a>링크기능 차단
+    return false;
+    
+});
+
+/*
+   autoPlay함수가  4초 간격으로 호출되어  
+   [1] ~ [4]버튼이미지를 감싸고 있는 <a>태그가 순차적으로 강제로 클릭되어
+      자동으로 배너이미가 변경되게 하기
+ */
+var btnNum = 0;
+
+//함수의 전체 흐름
+//최초 한번은 3초 간격으로 autoPlay함수를 호출하여 실행문을 실행하고,
+//다음번에는 4초간격으로 반복적으로 재귀함수 (autoPlay()함수)호출하여 실행문을 실행시킴
+function autoPlay(){
+	//일정한 간격으로 실행문이 실행될떄마다 변수btnNum의 값이 1씩 증가 되도록
+	btnNum++;
+	/*
+		Auto 동작원리에 대해서 알아보자.
+		버튼은 총4개로 [1] [2] [3] [4]...  
+		[1]번부터 [4]번까지 차례대로 일정한 간격으로 강제 클릭 이벤트가 반복되어 발생 된다면
+	       자동으로 배너이미지가 바뀌게 될 것입니다.
+	       이때  버튼이미지를 감싸고 있는 <a>태그의 index위치값은 0부터 ~~ 3까지 입니다.
+	       그러므로 일정한 간격으로 index위치값이 0부터 1씩 증가 되고,
+	       인덱스 위치의 값이 4이상이 되면 ~~???? 다시 9로 돌려 강제 이벤트를 발생 시킵니다. 
+	*/
+	if(btnNum >= 4) btnNum=0;
+	
+	//-변수 btnNum에 저장된 값을 이용해  버튼이미지를 감싸고 있는 <a>태그를 차례로 선택해 온후,
+	// trigger("강제로 발생시킬 이빈트명")함수를 적용하여  강제로 클릭 이벤트를 발생 시킵니다.
+	//-[1]~[4]버튼 이미지를 감싸고 있는 <a>가  btnNum변수 값에 따라서 순서 대로 선택되고 강제로 클릭 됨.
+	$("#roll_banner_wrap dt a").eq(btnNum).trigger("click");
+	
+	//4초 간격으로 재귀함수 호출 발생~
+	//그러므로 autoPlay함수에 일련의 실행문이 반복 실행됨.
+	auto1 = setTimeout(autoPlay,4000);
+}
+
+//최조 index.html 실행시..3초 이후에 autoPlay()함수 호출하여 실행
+var auto1 = setTimeout(autoPlay,3000);
+
+/*
+    정지 버튼 ■을 클릭 했을떄.. 일정한 간격으로 함수를 실행하여 버튼을 순차적으로 클릭되게 하는
+  setTimeout()메소드를 제거 하고, 정지 버튼 ■을 활성화된 이미지로 바꿈
+   즉, 자동으로 바뀌는 배너 이미지를 정지 시킵니다.
+ */
+$(".stopBtn").on("click", function(){
+	
+	//auto1변수에 저장되어  있는 setTimeout()메소드를 제거 함.
+	clearTimeout(auto1);
+	
+	//정지 버튼이미지<img>태그의 src속성값을 활성화된 버튼이미지주소로 바꿈
+	$("img",this).attr("src",  $("img",this).attr("src").replace("off.gif","on.gif"));
+	
+	//재생 버튼 이미지<img>태그를 선택해  비활성화된 버튼 이미지로 바꿈
+	$(".playBtn img").attr("src", 
+						   $(".playBtn img").attr("src").replace("on.gif","off.gif"));
+	
+	
+	//<a>링크 기능 차단
+	return false;
+	
+});
+
+//재생 ▶ 버튼 이미지를 감싸고 있는 <a>를 클릭 했을떄.. 
+//다시 배너이미지가 일정 한격으로 바뀌게 해야함
+$(".playBtn").click(function(){
+	
+	//방문자가 재생▶버튼을 여러번 클릭하게 되면 
+	//auto1 스택에 있는 setTimeout()실행문이 여러번 쌓여 문제가 될수 있음
+	//이문제를 해결 하기 위해서는 clearTimeout()메소드를 사용해 
+	//이미 앞서 저장된 setTimeout()메소드를 삭제 한후
+	//setTimeout()메소드를 호출하여 실행 해야 함
+	clearTimeout(auto1); //auto1에 저장되어 있는 setTimeout()메소드 삭제
+	auto1 = setTimeout(autoPlay,1000);//1초뒤에 autoPlay함수를 호출하여 실행
+	
+	//재생 버튼img태그의 src속성값을 변경 하여 활성화된 재생버튼 이미지로 바꿈
+	$("img",this).attr("src",
+			           $("img",this).attr("src").replace("off.gif","on.gif"));
+	
+	//활성화 되어 있던? 정지버튼img태그의  src속성값을 변경하여 비활성화된 정지 버튼 이미지로 바꿈
+	$(".stopBtn img").attr("src", 
+						  $(".stopBtn img").attr("src").replace("on.gif","off.gif"));
+	
+	//<a>태그의 링크 기능 차단
+	return false;
+	
+});
+
+
+ //-----------------------------------------------------------
+  /*
+   주제 : 탭 메뉴를 이용해 최근 게시물 리스트 만들기
+  
+  - 탭메뉴의 경우 최초 탭버튼인[공지사항]이 활성화되어 보입니다.
+        만일 방문자가 [질문과답변]탭을 클릭했을 때는 [공지사항]은 숨겨져야 하고,
+    [질문과 답변]의 내용은 활성화되어 보여야 합니다.
+    
+  - 먼저 탭버튼에 <a>에 on()메서드를 사용하여 mouseover,focus,click이벤트를 등록하였고,
+        이벤트 핸들러에는 이벤트가 발생 했을때 마우스를 올린 탭 버튼과 탭에 해당하는 게시물 목록이 활성화되어 보이도록 만들자. 
+   */
+  
+
+//id속성값이 tabmenu인 <dl id="tabmenu">요소의 하위 dt태그의 하위  첫번째 <a>태그를 선택하여
+//onTab변수에 저장
+var onTab = $("#tabmenu dt a:first"); //[공지사항]탭
+
+//<a>태그들(공지사항,질문과답변,저자문의)을 배열에 담아 선택해서 가져와서
+//마우스포인터를 올리거나, 포서스 또는  클릭 했을떄..
+$("#tabmenu dt a").on("mouseover focus click", function(){
+	
+  //먼저 현재 노출(:visible)되어 있는 <dd>태그를 선택하여
+  //게시글 리스트의 <dd>영역을 숨김
+  $("#tabmenu dd:visible").hide();//숨김
+  
+  //onTab변수에 저장되어 있는 [공지사항] <a>태그의 하위 <img>태그를 선택해
+  //src속성값을 변경하여 비활성화된 버튼 이미지로 바꿈
+  $("img",onTab).attr("src", $("img",onTab).attr("src").replace("over.gif","out.gif"));
+  
+  //마우스포인터가 올라간 <a>태그의 부모요소인?<dt>요소 다음에 오는<dd>요소를 선택하여 가져와서
+  //show()메소드를 이용하여 노출 시킴
+  $(this).parent().next().show();
+  
+  //마우스 포인터가 올라간 <a>태그의 하위 <img>태그를 선택해서 가져와서 
+  //활성화된 이미지로 바꿈
+  $("img",this).attr("src",$("img",this).attr("src").replace("out.gif","over.gif"));
+  
+  //각 탭 중에서 마우스가 올라간 <a>를 선택해 onTab변수에 저장
+  onTab = $(this);
+  
+  return false;
+ 
+});
+
+
+
+ 
+  
+  
+ //-----------------------------------------------------------
+  
+/*  
+주제 : 자동 슬라이드 배너 를 이용한 베스트 Book영역   
+	 https://bxslider.com/ 접속하여 사용법 보기 
+*/
+  /* 베스트북 슬라이더 */
+  //$("#best_bg ul")로 베스트BOOK 목록 태그인 <ul>태그를 선택하여
+  //bxSlider()메서드 적용 하고 슬라이드 옵션을 지정 
+  var mySlider=$("#best_bg ul").bxSlider({
+									       mode:"horizontal", //수평(horizontal) 방향으로 이동 시키기
+									        speed:500, //이동속도(500:0.5초)
+									        pager:false, //페이징 표시를 제어(flase:숨김, true:노출)
+									        moveSlides:1, //이동슬라이드 수 설정
+									        slideWidth:125,//슬라이드폭
+									        minSlides:1,//최소 노출 슬라이드 수 
+									        maxSlides:2,//최대 노출 슬라이드 수
+									        slideMargin:30,//슬라이드 간의 간격 입니다.
+									        auto:true,//자동 슬라이드 여부 (true:자동, false:수동)를 설정
+									        autoHover:true, //마우스 오버시 자동 정지 시키는 설정
+									        controls:false// 이전 ,다음 버튼을 숨김(true:노출, false:숨김)
+  										});
+  //  https://bxslider.com/options/
+  
+  //< 이전 버튼을 클릭 할때마다 
+  $(".prev_btn").on("click",function(){
+	  //goToPrevSlide()를 이용하여 슬라이드를 한단계 이전으로 이동 되게 하기 
+	  mySlider.goToPrevSlide();
+	  //<a>링크 차단
+	  return false;
+  });
+
+  //> 다음 버튼을 클릭 할때마다
+  $(".next_btn").on("click",function(){
+	  //goToNextSlide()를 이용하여 슬라이드를 한단계 다음으로 이동 되게 하기
+	  mySlider.goToNextSlide();
+	  return false;
+	});
+  //-----------------------------------------------------------
+
+  /*  
+  주제 : 제이쿼리 UI플러그인과 쿠키 플러그인 사용 하기
+  - 팝업창을 드래그 하여 이동시키여면, 제이쿼리 UI플러그인을 사용함.
+  - [하루동안 이창 열지 않기]버튼 기능을 하용하기 위해서는 쿠키 플러그인을 사용함
+  
+  참고 : 쿠키 플러그인 사용법
+  	       
+  	    <쿠키를 생성 하는 기본 사용법>
+  	  	 $.cookie("쿠키명","쿠키값",{expires:만료일});
+  	  	 설명 : 쿠키명은 나중에 저장된 쿠키의 값을 불러올때 구분하기 위한 이름임.
+  	  	           생성된 쿠키는 현재 부터 며칠동안 클라이언트 컴퓨터의 웹브라우저에 보관할건지 만료일(expires)을 지정할수 있음.
+
+			예)
+	 	     $.cookie("pop","no",1);
+	 	         설명: 브라우저에는 "pop"라는 이름으로 "no"라는 값이 1일 동안 쿠키가 보관 됩니다.
+ 	         
+ 	    <쿠키 플러그인을 이용하여  브라우저에 저장된 쿠키를 불러오는 기본 사용법>
+ 	    $.cookie("쿠키명");
+ 	    
+	 	       저장된 쿠키값인 "no" 불러오는 방법의 예)
+	 	    $.cookie("pop");
+ 	    
+ 	    <쿠키 플러그인을 이용하여 브라우저에 저장된 쿠키를 삭제하는 기본 사용법>
+ 	    $.cookie("쿠키명",null);
+ 	    
+	 	    "pop"에 저장된 쿠키값 삭제의 예)
+ 	         $.cookie("pop",null);
+  	  		
+  */
+  
+   /*팝업 연동*/
+  //설명 : 저장된 "pop"에 쿠키값을 검사하여 만일 쿠키가 저장되어 있지 않으면 숨겨져 있던 팝업 창이 보이도록 함.
+  //      그리고 방문객이 [하룻동안 이 창 열지 않기]를 눌렀을 때는 쿠키가 생성되어 하루동안 보관 되도록 함.
+
+  
+  
+  
+});
+
+
+
+

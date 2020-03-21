@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mapper.qna">
+  	
+	<resultMap id="qnaResult" type="qnaBean">
+		<result property="idx" column="idx" />
+		<result property="nickname" column="nickname" />
+		<result property="email" column="email" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="writedate" column="writedate" />
+		<result property="admincheck" column="admincheck" />
+		<result property="readcheck" column="readcheck" />
+	</resultMap>  		
+  	
+  	<resultMap id="replyResult" type="replyBean">
+		<result property="idx" column="idx" />
+		<result property="writer" column="writer" />
+		<result property="content" column="content" />
+		<result property="writedate" column="writedate" />
+		<result property="parentnum" column="parentnum" />
+	</resultMap>  		
+  	
+	<insert id="insertQna">
+		<![CDATA[
+	  		insert into qna (nickname, email , title , content , writedate , admincheck , readcheck) 
+	  		values(#{nickname},#{email},#{title},#{content},#{writedate},#{admincheck},#{readcheck})
+	    ]]>	
+	</insert>
+  	<select id="selectQnaList" resultMap="qnaResult">
+		select * from qna 
+		<if test="nickname != null">
+			where nickname = #{nickname}		
+		</if>
+  	</select>
+  	<select id="selectQna" parameterType="int" resultMap="qnaResult">
+		<![CDATA[
+			select * from qna where idx = #{idx}
+	    ]]>	
+  	</select>
+  	<delete id="deleteQna" parameterType="int">
+		<![CDATA[
+			delete from qna where idx = #{idx}
+	    ]]>	
+  	</delete>
+  	<delete id="deleteQna_memberDel">
+		<![CDATA[
+			delete from qna where nickname = #{nickname}
+	    ]]>	
+  	</delete>
+  	<update id="updateQna">
+		<![CDATA[
+			update qna set title=#{title},content=#{content} where idx=#{idx}
+	    ]]>	
+  	</update>
+  	<update id="updateQnaAdminCheckUp">
+		<![CDATA[
+			update qna set adminCheck=1 where idx=#{parentnum}
+	    ]]>	
+  	</update>
+  	<update id="updateQnaAdminCheckDown">
+		<![CDATA[
+			update qna set adminCheck=0 where idx=#{idx}
+	    ]]>	
+  	</update>
+	<update id="updateQnaReadcheck">
+		<![CDATA[
+			update qna set readcheck=1 where idx=#{idx}
+	    ]]>	
+	</update>
+  	<select id="selectReply" parameterType="int" resultMap="replyResult">
+	  	<![CDATA[
+	  		select * from qnareply where parentnum = #{idx}
+	  	]]>
+  	</select>
+  	<insert id="insertReply">
+	  	<![CDATA[
+	  		insert into qnareply (writer,content,writedate,parentnum)
+	  		values(#{writer},#{content},#{writedate},#{parentnum})
+	  	]]>
+  	</insert>
+  	<delete id="deleteReply" parameterType="int">
+	  	<![CDATA[
+			delete from qnareply where parentnum=#{idx}
+	  	]]>
+  	</delete>
+  	<select id="unreadQnaCount" resultType="_int">
+	  	<![CDATA[
+			select count(*) from qna where admincheck = 1 and readcheck = 0 and email = #{email}
+	  	]]>
+  	</select>
+  	<select id="unreadQnaSelect" resultMap="qnaResult">
+	  	<![CDATA[
+			select * from qna where admincheck = 1 and readcheck = 0 and email = #{email}
+	  	]]>
+  	</select>
+  	
+  	
+</mapper>

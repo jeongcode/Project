@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="mapper.member">
+  
+  	<resultMap id="memResult" type="memberBean">
+  		<result property="nickname" column="nickname"/>
+   		<result property="email" column="email"/>
+   		<result property="pwd" column="pwd"/>
+   		<result property="tel" column="tel"/>
+   		<result property="point" column="point"/>
+   		<result property="joindate" column="joindate"/>
+  	</resultMap>
+  
+    <select id="selectAllMemberList"  resultMap="memResult"> 
+    <![CDATA[
+  		select * from member
+    ]]>
+  	</select>
+
+    <select id="selectDuplChkResult"  resultType="_int"> 
+  		select count(*) from member 
+		<where>
+		  <if test="email != null">
+		       email = #{email}
+		  </if>
+		  <if test="nickname != null">
+		      nickname = #{nickname}
+		  </if>
+		</where>
+  	</select>
+  	
+	<insert id="insertMember">
+    <![CDATA[
+		insert into member(nickname,email,pwd,tel,joindate,point)
+		values( #{nickname} , #{email} , #{pwd} , #{tel} , #{joindate} , #{point} )
+    ]]>
+	</insert>
+	
+	<select id="selectLoginResult" resultMap="memResult">
+    <![CDATA[
+		select email,nickname from member where email = #{email} and pwd = #{password}	
+    ]]>
+	</select>	
+  
+    <select id="selectMember" resultMap="memResult">
+    <![CDATA[
+		select * from member where nickname = #{nickname}
+    ]]>
+  	</select>
+  
+  	<select id="selectAllMember" resultMap="memResult">
+    <![CDATA[
+		select * from member where nickname = '관리자' = 0
+    ]]>
+  	</select>
+  	
+  	<delete id="deleteMember" >
+    <![CDATA[
+		delete from member where nickname = #{nickname}
+    ]]>
+  	</delete>
+  	
+  	<update id="updateMemberPassword">
+    <![CDATA[
+		update member set pwd = #{tmpPassword} where email = #{email}
+    ]]>
+  	</update>
+  </mapper>
+  
+

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mapper.payment">
+
+    	<resultMap id="payResult" type="paymentBean">
+	  		<result property="nickname" 				column="nickname"/>
+			<result property="email"					column="email"/>
+			<result property="tripkind" 				column="tripkind"/>
+			<result property="oneway_airlinenm"			column="oneway_airlinenm"/>
+			<result property="oneway_depairportnm" 		column="oneway_depairportnm"/>
+			<result property="oneway_arrairportnm" 		column="oneway_arrairportnm"/>
+			<result property="oneway_depdatetime" 		column="oneway_depdatetime"/>
+			<result property="oneway_charge" 			column="oneway_charge"/>
+			<result property="roundtrip_airlinenm" 		column="roundtrip_airlinenm"/>
+			<result property="roundtrip_depairportnm" 	column="roundtrip_depairportnm"/>
+			<result property="roundtrip_arrairportnm" 	column="roundtrip_arrairportnm"/>
+			<result property="roundtrip_arrdatetime" 	column="roundtrip_arrdatetime"/>
+			<result property="roundtrip_charge" 		column="roundtrip_charge"/>
+			<result property="totalcharge" 				column="totalcharge"/>
+			<result property="paymentdate" 				column="paymentdate"/>
+			<result property="paymentpoint" 			column="paymentpoint"/>
+			<result property="readcheck"				column="readcheck"/>
+		</resultMap>
+   
+   		<insert id="insertPayment">
+   			insert into payment(nickname , email , tripkind
+   								, oneway_airlinenm , oneway_depairportnm , oneway_arrairportnm , oneway_depdatetime , oneway_charge
+   							<if test="roundtrip_airlinenm != null">
+   								, roundtrip_airlinenm , roundtrip_depairportnm , roundtrip_arrairportnm , roundtrip_arrdatetime , roundtrip_charge
+   							</if>
+   								, totalcharge , paymentdate , paymentpoint , readcheck)
+   							values(#{nickname} , #{email} , #{tripkind}
+					    		, #{oneway_airlinenm} , #{oneway_depairportnm} , #{oneway_arrairportnm} , #{oneway_depdatetime} , #{oneway_charge}
+							<if test="roundtrip_airlinenm != null">
+								, #{roundtrip_airlinenm} , #{roundtrip_depairportnm} , #{roundtrip_arrairportnm} , #{roundtrip_arrdatetime} , #{roundtrip_charge}
+							</if>
+								, #{totalcharge} , #{paymentdate} , #{paymentpoint} , #{readcheck)
+   		</insert>
+   		
+   		<delete id="deletePayment_memberDel">
+   			<![CDATA[
+				delete from payment where nickname = #{nickname}
+    		]]>	
+   		</delete>
+   		<update id="updateMemberPoint">
+   			<![CDATA[
+				update member set point = point + #{paymentpoint} where email=#{email}
+    		]]>	   		
+   		</update>
+   		<update id="updatePaymentReadcheck">
+   			<![CDATA[
+				update payment set readcheck = 1 where email=#{email}
+    		]]>	   		
+   		</update>
+   		<select id="selectPayment" resultMap="payResult">
+   				select * from payment
+   				<if test="email != null">
+   					where email = #{email}
+   				</if>
+   		</select>
+   		<select id="unreadPaymentCount" resultType="_int">
+   			<![CDATA[
+				select count(*) from payment where readcheck = 0 and email = #{email};
+    		]]>	   		
+   		</select>
+   		<select id="unreadPaymentSelect" resultMap="payResult">
+   			<![CDATA[
+				select * from payment where readcheck = 0 and email = #{email};
+    		]]>	   		
+   		</select>
+   		
+   		
+   		
+   		
+</mapper>
