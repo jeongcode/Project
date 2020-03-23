@@ -37,7 +37,7 @@
 							<if test="roundtrip_airlinenm != null">
 								, #{roundtrip_airlinenm} , #{roundtrip_depairportnm} , #{roundtrip_arrairportnm} , #{roundtrip_arrdatetime} , #{roundtrip_charge}
 							</if>
-								, #{totalcharge} , #{paymentdate} , #{paymentpoint} , #{readcheck}
+								, #{totalcharge} , #{paymentdate} , #{paymentpoint} , #{readcheck})
    		</insert>
    		
    		<delete id="deletePayment_memberDel">
